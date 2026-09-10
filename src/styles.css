@@ -1691,6 +1691,524 @@ p {
   }
 }
 
+/* Regional Heatmap Matrix */
+.regional-heatmap-container {
+  margin-top: 10px;
+}
+
+.regions-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.region-card {
+  background: white;
+  border: 1px solid #dde5e6;
+  border-radius: 11px;
+  padding: 18px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.region-card.has-critical {
+  border-left: 4px solid #b94338;
+}
+
+.region-card:hover {
+  border-color: #23a07a;
+  box-shadow: 0 6px 18px rgba(35, 160, 122, 0.1);
+}
+
+.region-card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.region-name-flex {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.region-name-flex b {
+  font-size: 13px;
+  color: #172b36;
+}
+
+.risk-pill-sm {
+  font: 500 9px 'DM Mono', monospace;
+  padding: 3px 7px;
+  border-radius: 4px;
+}
+
+.risk-pill-sm.critical { background: #ffe5e2; color: #b94338; }
+.risk-pill-sm.watch { background: #e7eff8; color: #35678f; }
+.risk-pill-sm.low { background: #def6eb; color: #167653; }
+
+.region-body-stats {
+  display: flex;
+  justify-content: space-between;
+  background: #f8faf9;
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-bottom: 12px;
+}
+
+.region-body-stats small {
+  font-size: 9px;
+  color: #788a91;
+  display: block;
+}
+
+.region-body-stats b {
+  font-size: 16px;
+  color: #172b36;
+}
+
+.region-projects-list {
+  display: grid;
+  gap: 6px;
+  margin-top: auto;
+}
+
+.region-project-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 10px;
+  padding: 6px 8px;
+  background: #f4f8f6;
+  border-radius: 5px;
+
+  transition: background 0.12s ease;
+}
+
+.region-project-item:hover {
+  background: #e6f3ed;
+}
+
+.region-project-item span:first-child {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 170px;
+  color: #243842;
+}
+
+/* Comparison Modal */
+.compare-modal {
+  width: min(1050px, 96vw);
+}
+
+.compare-grid {
+  display: grid;
+  gap: 1px;
+  background: #e1e8ea;
+  border: 1px solid #d4dfe2;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.compare-label-cell, .compare-header-cell, .compare-data-cell {
+  background: white;
+  padding: 12px 14px;
+  font-size: 11px;
+}
+
+.compare-label-cell {
+  font: 600 10px 'DM Mono', monospace;
+  color: #63777f;
+  background: #f6f9f9;
+  display: flex;
+  align-items: center;
+}
+
+.compare-header-cell {
+  background: #f0f6f4;
+  display: grid;
+  gap: 3px;
+}
+
+.compare-header-cell b {
+  font-size: 12px;
+  color: #172b36;
+}
+
+.compare-header-cell small {
+  font-size: 9px;
+  color: #6d7e85;
+}
+
+.compare-cost-tag {
+  font: 600 10px 'DM Mono', monospace;
+  color: #17654b;
+  margin-top: 4px;
+}
+
+.compare-data-cell {
+  display: grid;
+  gap: 4px;
+  align-content: center;
+}
+
+.compare-score-num {
+  font-size: 18px;
+  color: #172b36;
+}
+
+.driver-preview, .recommend-preview {
+  font-size: 10px;
+  color: #55676f;
+  line-height: 1.4;
+}
+
+/* View switcher actions */
+.view-switch-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.view-mode-toggle {
+  display: flex;
+  background: #e5eded;
+  padding: 3px;
+  border-radius: 8px;
+}
+
+.view-mode-toggle button {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 6px 10px;
+  border-radius: 6px;
+  color: #5d7078;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.view-mode-toggle button.active {
+  background: white;
+  color: #172b36;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+}
+
+.compare-trigger-btn {
+  padding: 7px 12px !important;
+  font-size: 10px !important;
+}
+
+.project-title-cell {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.project-title-cell input[type="checkbox"] {
+  accent-color: #23a07a;
+  cursor: pointer;
+}
+
+.row-selected {
+  background: #eef8f3 !important;
+  border-left: 3px solid #23a07a;
+}
+
+/* Milestone Pipeline inside Drawer */
+.milestone-pipeline {
+  background: #f8faf9;
+  border: 1px solid #e5ece9;
+  border-radius: 10px;
+  padding: 14px;
+  margin-bottom: 20px;
+}
+
+.milestone-pipeline h3 {
+  font-size: 12px;
+  margin-bottom: 10px;
+}
+
+.pipeline-steps {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+}
+
+.step {
+  border-radius: 7px;
+  padding: 8px;
+  text-align: center;
+  font-size: 9px;
+  display: grid;
+  place-items: center;
+  gap: 2px;
+}
+
+.step span {
+  font-weight: 700;
+  display: block;
+}
+
+.step small {
+  color: #718087;
+}
+
+.step-done { background: #def6eb; color: #167653; }
+.step-warn { background: #ffe8e5; color: #ba3d30; }
+.step-active { background: #e4eff8; color: #27628f; }
+.step-pending { background: #f0f4f5; color: #83959c; }
+
+/* Voice Assistant Button */
+.answer-header-flex {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.voice-btn {
+  border: 1px solid #cceada;
+  background: #edf8f3;
+  color: #17654b;
+  border-radius: 6px;
+  padding: 5px 9px;
+  font-size: 10px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex: none;
+  transition: all 0.15s ease;
+}
+
+.voice-btn:hover, .voice-btn.speaking {
+  background: #17654b;
+  color: white;
+}
+
+@media(max-width: 950px) {
+  .regions-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media(max-width: 600px) {
+  .regions-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .pipeline-steps {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* ROI & Public Funds Protection Calculator */
+.roi-calculator-card {
+  background: white;
+  border: 1px solid #dde5e6;
+  border-radius: 11px;
+  padding: 20px;
+  margin-bottom: 24px;
+}
+
+.roi-card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.roi-title-flex {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.roi-title-flex b {
+  font-size: 11px;
+  font: 600 11px 'DM Mono', monospace;
+  color: #173b2b;
+  display: block;
+}
+
+.roi-title-flex p {
+  font-size: 10px;
+  color: #6d7e85;
+}
+
+.roi-badge {
+  font: 500 9px 'DM Mono', monospace;
+  background: #eef6f2;
+  color: #17654b;
+  padding: 3px 8px;
+  border-radius: 4px;
+}
+
+.roi-metrics-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.roi-metric-item {
+  background: #f8faf9;
+  border: 1px solid #e5ece9;
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.roi-metric-item small {
+  font-size: 10px;
+  color: #718087;
+}
+
+.roi-metric-item b {
+  font-size: 20px;
+  display: block;
+  color: #172b36;
+  margin: 2px 0;
+}
+
+.roi-metric-item span {
+  font-size: 9px;
+  color: #8c9fa6;
+}
+
+.roi-interactive-box {
+  background: #f0f7f4;
+  border: 1px solid #d4eae0;
+  border-radius: 9px;
+  padding: 16px;
+}
+
+.roi-interactive-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #173b2b;
+  margin-bottom: 12px;
+}
+
+.roi-slider-group {
+  display: grid;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+.roi-slider-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+
+  color: #4a5c64;
+}
+
+.roi-slider-label b {
+  color: #17654b;
+}
+
+.roi-slider-group input[type="range"] {
+  width: 100%;
+  accent-color: #23a07a;
+}
+
+.roi-results-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  background: white;
+  border-radius: 7px;
+  padding: 12px;
+  border: 1px solid #dce8e2;
+}
+
+.roi-result-item small {
+  font-size: 9px;
+  color: #718087;
+  display: block;
+}
+
+.roi-result-item b {
+  font-size: 15px;
+  color: #172b36;
+  display: block;
+  margin: 2px 0;
+}
+
+.roi-result-item span {
+  font-size: 9px;
+  color: #8c9fa6;
+}
+
+.txt-mint {
+  color: #17654b !important;
+}
+
+/* Preset Quick Filter Bar */
+.preset-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+  background: #f8faf9;
+  border: 1px solid #e5ece9;
+  border-radius: 9px;
+  padding: 10px 14px;
+}
+
+.preset-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #4a5c64;
+}
+
+.preset-chips {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.preset-chip {
+  font-size: 10px;
+  font-weight: 600;
+  border: 1px solid #d4dfdb;
+  background: white;
+  padding: 5px 10px;
+  border-radius: 6px;
+  color: #3b5563;
+  transition: all 0.12s ease;
+}
+
+.preset-chip:hover {
+  background: #eef6f2;
+  border-color: #23a07a;
+  color: #17654b;
+}
+
+.data-actions-flex {
+  display: flex;
+  gap: 8px;
+}
+
+@media(max-width: 600px) {
+  .roi-metrics-row, .roi-results-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+
 /* Toast Notification System */
 .toast-container {
   position: fixed;

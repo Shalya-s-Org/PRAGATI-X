@@ -1,23 +1,28 @@
 import React, { useState } from 'react';
-import { BrainCircuit, Sparkles, ArrowRight, CheckCircle2, AlertTriangle, ShieldCheck, Info } from 'lucide-react';
+import { BrainCircuit, Sparkles, ArrowRight, CheckCircle2, AlertTriangle, Volume2, VolumeX, Info } from 'lucide-react';
 import { Header } from '../common/Header';
+import { useToast } from '../common/ToastSystem';
 import type { PortfolioProject } from '../../types';
 
 interface PortfolioAssistantPageProps {
   projects: PortfolioProject[];
   onResetDemo: () => void;
+  onExportReport?: () => void;
   onToggleMobileNav?: () => void;
 }
 
 export const PortfolioAssistantPage: React.FC<PortfolioAssistantPageProps> = ({
   projects,
   onResetDemo,
+  onExportReport,
   onToggleMobileNav
 }) => {
+  const { showToast } = useToast();
   const [selectedProjectId, setSelectedProjectId] = useState<string>(projects[0]?.id || '');
   const [query, setQuery] = useState<string>('');
   const [answer, setAnswer] = useState<string>('');
   const [askedQuestion, setAskedQuestion] = useState<string>('');
+  const [isSpeaking, setIsSpeaking] = useState<boolean>(false);
 
   const samplePrompts = [
     'Why is Eastern Freight Corridor Phase II flagged as Critical?',
@@ -30,9 +35,13 @@ export const PortfolioAssistantPage: React.FC<PortfolioAssistantPageProps> = ({
     const textToAsk = promptText || query;
     if (!textToAsk.trim()) return;
 
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+      setIsSpeaking(false);
+    }
+
     setAskedQuestion(textToAsk);
 
-    // Find targeted project or default to selected / highest risk
     const targetProject = projects.find(p =>
       textToAsk.toLowerCase().includes(p.name.toLowerCase()) ||
       textToAsk.toLowerCase().includes(p.id.toLowerCase())
@@ -49,9 +58,8 @@ export const PortfolioAssistantPage: React.FC<PortfolioAssistantPageProps> = ({
       }
     } else if (textToAsk.toLowerCase().includes('transport') || textToAsk.toLowerCase().includes('sector')) {
       const sectorProjects = projects.filter(p => p.sector.toLowerCase() === 'transport');
-      responseText = `In the Transport sector, ${sectorProjects.length} projects are being monitored. High risk projects include ${sectorProjects.map(p => `${p.name} (Score: ${p.assessment.score})`).join(', ')}. Primary risk drivers relate to land acquisition ROW delays and subcontractor mobilization.`;
+      responseText = `In the Transport sector, ${sectorProjects.length} projects are being monitored. High risk projects include ${sectorProjects.map(p => `${p.name} (Score: ${p.assessment.score})`).join(', ')}. Primary risk drivers relate to land acquisition right of way delays and subcontractor mobilization.`;
     } else {
-      // Direct project query response
       const driversList = targetProject.assessment.drivers.map(d => `• ${d}`).join('\n');
       const priorInterventions = targetProject.interventions.length > 0
         ? `Prior officer intervention: "${targetProject.interventions[0].type}" resulted in "${targetProject.interventions[0].outcome}".`
@@ -63,12 +71,37 @@ export const PortfolioAssistantPage: React.FC<PortfolioAssistantPageProps> = ({
     setAnswer(responseText);
   };
 
+  const handleToggleSpeak = () => {
+    if (!('speechSynthesis' in window)) {
+      showToast('Speech synthesis not supported in this browser.', 'warning');
+      return;
+    }
+
+    if (isSpeaking) {
+      window.speechSynthesis.cancel();
+      setIsSpeaking(false);
+    } else {
+      if (!answer) return;
+      window.speechSynthesis.cancel();
+      const speakText = answer.replace(/\[Disclaimer:[^\]]+\]/g, ''); // strip disclaimer for spoken audio
+      const utterance = new SpeechSynthesisUtterance(speakText);
+      utterance.rate = 1.0;
+      utterance.onend = () => setIsSpeaking(false);
+      utterance.onerror = () => setIsSpeaking(false);
+
+      setIsSpeaking(true);
+      window.speechSynthesis.speak(utterance);
+      showToast('🔊 Audio playback started', 'info');
+    }
+  };
+
   return (
     <div className="assistant-page-view">
       <Header
         title="Portfolio AI assistant"
         subtitle="Evidence-bound explanations only. Synthesizes curated snapshot data, risk drivers, and officer feedback."
         onReset={onResetDemo}
+        onExportReport={onExportReport}
         onToggleMobileNav={onToggleMobileNav}
       />
 
@@ -124,7 +157,17 @@ export const PortfolioAssistantPage: React.FC<PortfolioAssistantPageProps> = ({
             <div className="answer">
               <Sparkles size={16} className="icon-mint" />
               <div className="answer-content">
-                <p className="answer-text">{answer}</p>
+                <div className="answer-header-flex">
+                  <p className="answer-text">{answer}</p>
+                  <button
+                    className={`voice-btn ${isSpeaking ? 'speaking' : ''}`}
+                    onClick={handleToggleSpeak}
+                    title={isSpeaking ? 'Stop speech audio' : 'Read answer aloud'}
+                  >
+                    {isSpeaking ? <VolumeX size={14} /> : <Volume2 size={14} />}
+                    <span>{isSpeaking ? 'Stop Audio' : 'Read Aloud'}</span>
+                  </button>
+                </div>
                 <small className="citation-tag">
                   Sources: Curated PAIMANA/CUF demo snapshot · SHAP risk drivers · Officer intervention log
                 </small>

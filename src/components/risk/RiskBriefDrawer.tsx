@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { X, CheckCircle2, ShieldAlert, Info, Send, Sliders, RefreshCcw } from 'lucide-react';
+import { X, CheckCircle2, ShieldAlert, Info, Send, Sliders, RefreshCcw, AlertTriangle, Clock } from 'lucide-react';
 import { RiskBadge, StatusBadge, OutcomeBadge } from '../common/Badge';
 import { useToast } from '../common/ToastSystem';
 import type { PortfolioProject, InterventionType, Outcome, RiskLevel } from '../../types';
@@ -88,6 +88,8 @@ export const RiskBriefDrawer: React.FC<RiskBriefDrawerProps> = ({
     showToast(`Intervention recorded for ${project.name}! Status: ${outcome === 'Mitigated' || outcome === 'False alert' ? 'Resolved' : 'Monitoring'}`, 'success');
   };
 
+  const isDelayedPhase = project.assessment.costVariance > 10 || project.assessment.scheduleVariance > 10;
+
   return (
     <div
       className="drawer-back"
@@ -153,6 +155,33 @@ export const RiskBriefDrawer: React.FC<RiskBriefDrawerProps> = ({
               <div>
                 <b>RECOMMENDED OFFICER ACTION</b>
                 <p>{project.recommendedAction}</p>
+              </div>
+            </div>
+
+            {/* Visual Milestone Progress Timeline */}
+            <div className="milestone-pipeline">
+              <h3>Milestone Execution Pipeline</h3>
+              <div className="pipeline-steps">
+                <div className="step step-done">
+                  <CheckCircle2 size={14} />
+                  <span>Site & Survey</span>
+                  <small>Completed</small>
+                </div>
+                <div className={`step ${isDelayedPhase ? 'step-warn' : 'step-done'}`}>
+                  {isDelayedPhase ? <AlertTriangle size={14} /> : <CheckCircle2 size={14} />}
+                  <span>Clearances & ROW</span>
+                  <small>{isDelayedPhase ? 'Delayed' : 'Completed'}</small>
+                </div>
+                <div className="step step-active">
+                  <Clock size={14} />
+                  <span>Construction</span>
+                  <small>In Progress</small>
+                </div>
+                <div className="step step-pending">
+                  <Clock size={14} />
+                  <span>Synchronization</span>
+                  <small>Pending</small>
+                </div>
               </div>
             </div>
 

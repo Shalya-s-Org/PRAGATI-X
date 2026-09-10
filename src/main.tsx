@@ -10,6 +10,7 @@ import { InterventionLoopPage } from './components/intervention/InterventionLoop
 import { DataQualityPage } from './components/data/DataQualityPage';
 import { PortfolioAssistantPage } from './components/assistant/PortfolioAssistantPage';
 import { ExecutiveReportModal } from './components/common/ExecutiveReportModal';
+import { ProjectComparisonModal } from './components/portfolio/ProjectComparisonModal';
 import type { PortfolioProject } from './types';
 import './styles.css';
 
@@ -18,6 +19,7 @@ function AppContent() {
   const { showToast } = useToast();
   const [activePage, setActivePage] = useState<string>('portfolio');
   const [selectedProject, setSelectedProject] = useState<PortfolioProject | null>(null);
+  const [comparingProjects, setComparingProjects] = useState<PortfolioProject[]>([]);
   const [mobileNavOpen, setMobileNavOpen] = useState<boolean>(false);
   const [showReportModal, setShowReportModal] = useState<boolean>(false);
 
@@ -66,6 +68,7 @@ function AppContent() {
           <PortfolioCenter
             {...commonProps}
             onOpenProject={handleOpenProject}
+            onCompareProjects={setComparingProjects}
           />
         );
       case 'risk':
@@ -99,6 +102,7 @@ function AppContent() {
           <PortfolioCenter
             {...commonProps}
             onOpenProject={handleOpenProject}
+            onCompareProjects={setComparingProjects}
           />
         );
     }
@@ -129,6 +133,13 @@ function AppContent() {
         <ExecutiveReportModal
           projects={projects}
           onClose={() => setShowReportModal(false)}
+        />
+      )}
+
+      {comparingProjects.length >= 2 && (
+        <ProjectComparisonModal
+          projects={comparingProjects}
+          onClose={() => setComparingProjects([])}
         />
       )}
     </div>

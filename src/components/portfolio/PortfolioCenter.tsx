@@ -1,14 +1,17 @@
-import React from 'react';
-import { AlertTriangle, Activity, ChevronRight, ShieldCheck, Clock } from 'lucide-react';
+import React, { useState } from 'react';
+import { AlertTriangle, Activity, ChevronRight, ShieldCheck, Clock, Map, List, Columns } from 'lucide-react';
 import { Header } from '../common/Header';
 import { RiskBadge, StatusBadge } from '../common/Badge';
 import { PortfolioCharts } from './PortfolioCharts';
 import { DemoScenariosBar } from './DemoScenariosBar';
+import { RegionalHeatmap } from './RegionalHeatmap';
+import { RoiSavingsCalculator } from './RoiSavingsCalculator';
 import type { PortfolioProject } from '../../types';
 
 interface PortfolioCenterProps {
   projects: PortfolioProject[];
   onOpenProject: (project: PortfolioProject) => void;
+  onCompareProjects: (projects: PortfolioProject[]) => void;
   onResetDemo: () => void;
   onExportReport?: () => void;
   onToggleMobileNav?: () => void;
@@ -17,21 +20,41 @@ interface PortfolioCenterProps {
 export const PortfolioCenter: React.FC<PortfolioCenterProps> = ({
   projects,
   onOpenProject,
+  onCompareProjects,
   onResetDemo,
   onExportReport,
   onToggleMobileNav
 }) => {
+  const [viewMode, setViewMode] = useState<'queue' | 'heatmap'>('queue');
+  const [selectedForCompare, setSelectedForCompare] = useState<string[]>([]);
+
   const criticalCount = projects.filter(p => p.risk === 'Critical').length;
   const highCount = projects.filter(p => p.risk === 'High').length;
   const openInterventionsCount = projects.reduce((acc, p) => acc + p.interventions.length, 0);
   const resolvedCount = projects.filter(p => p.status === 'Resolved').length;
 
   const sortedProjects = [...projects].sort((a, b) => b.assessment.score - a.assessment.score);
-  const prioritySlice = sortedProjects.slice(0, 6);
+  const prioritySlice = sortedProjects.slice(0, 8);
 
   const avgAlertAge = Math.round(
     projects.reduce((acc, p) => acc + p.alertAgeDays, 0) / (projects.length || 1)
   );
+
+  const toggleCompare = (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setSelectedForCompare(prev => {
+      if (prev.includes(id)) return prev.filter(x => x !== id);
+      if (prev.length >= 3) return prev;
+      return [...prev, id];
+    });
+  };
+
+  const handleLaunchCompare = () => {
+    const selectedProjs = projects.filter(p => selectedForCompare.includes(p.id));
+    if (selectedProjs.length >= 2) {
+      onCompareProjects(selectedProjs);
+    }
+  };
 
   return (
     <div className="portfolio-center-view">
@@ -111,47 +134,89 @@ export const PortfolioCenter: React.FC<PortfolioCenterProps> = ({
         </div>
       </section>
 
+      {/* ROI & Public Funds Protection Calculator */}
+      <RoiSavingsCalculator />
+
       {/* Embedded Portfolio Visualizations */}
       <PortfolioCharts projects={projects} />
 
-      {/* Priority Queue Section */}
+      {/* View Switcher & Comparison Bar */}
       <div className="section-title">
         <div>
-          <p className="px-kicker">PRIORITY QUEUE</p>
-          <h2>Where to look first</h2>
+          <p className="px-kicker">PORTFOLIO VIEWS</p>
+          <h2>{viewMode === 'queue' ? 'Priority Risk Queue' : 'Regional Zone Matrix'}</h2>
+        </div>
+
+        <div className="view-switch-actions">
+          {selectedForCompare.length >= 2 && (
+            <button className="primary compare-trigger-btn" onClick={handleLaunchCompare}>
+              <Columns size={14} /> Compare ({selectedForCompare.length})
+            </button>
+          )}
+
+          <div className="view-mode-toggle">
+            <button
+              className={viewMode === 'queue' ? 'active' : ''}
+              onClick={() => setViewMode('queue')}
+            >
+              <List size={14} /> Priority Queue
+            </button>
+            <button
+              className={viewMode === 'heatmap' ? 'active' : ''}
+              onClick={() => setViewMode('heatmap')}
+            >
+              <Map size={14} /> Regional Matrix
+            </button>
+          </div>
         </div>
       </div>
 
-      <div className="queue">
-        <div className="queue-head">
-          <span>PROJECT NAME & CONTEXT</span>
-          <span>SEVERITY</span>
-          <span>SCORE</span>
-          <span>REVIEW STATUS</span>
-          <span />
+      {viewMode === 'queue' ? (
+        <div className="queue">
+          <div className="queue-head">
+            <span style={{ paddingLeft: '28px' }}>PROJECT NAME & CONTEXT</span>
+            <span>SEVERITY</span>
+            <span>SCORE</span>
+            <span>REVIEW STATUS</span>
+            <span />
+          </div>
+          {prioritySlice.map(project => {
+            const isSelected = selectedForCompare.includes(project.id);
+            return (
+              <button
+                className={`project-row ${isSelected ? 'row-selected' : ''}`}
+                key={project.id}
+                onClick={() => onOpenProject(project)}
+              >
+                <div className="project-title-cell">
+                  <input
+                    type="checkbox"
+                    checked={isSelected}
+                    onChange={e => toggleCompare(project.id, e as any)}
+                    onClick={e => e.stopPropagation()}
+                    title="Select to compare side-by-side"
+                  />
+                  <div>
+                    <b>{project.name}</b>
+                    <small>
+                      {project.ministry} · {project.sector} · {project.region} · Alert: {project.alertAgeDays}d old
+                    </small>
+                  </div>
+                </div>
+                <RiskBadge level={project.risk} />
+                <div className="inline-score">
+                  <b>{project.assessment.score}</b>
+                  <span className="score-sub">({project.assessment.confidence}% conf)</span>
+                </div>
+                <StatusBadge status={project.status} />
+                <ChevronRight size={16} className="chevron-icon" />
+              </button>
+            );
+          })}
         </div>
-        {prioritySlice.map(project => (
-          <button
-            className="project-row"
-            key={project.id}
-            onClick={() => onOpenProject(project)}
-          >
-            <div>
-              <b>{project.name}</b>
-              <small>
-                {project.ministry} · {project.sector} · {project.region} · Alert: {project.alertAgeDays}d old
-              </small>
-            </div>
-            <RiskBadge level={project.risk} />
-            <div className="inline-score">
-              <b>{project.assessment.score}</b>
-              <span className="score-sub">({project.assessment.confidence}% conf)</span>
-            </div>
-            <StatusBadge status={project.status} />
-            <ChevronRight size={16} className="chevron-icon" />
-          </button>
-        ))}
-      </div>
+      ) : (
+        <RegionalHeatmap projects={projects} onOpenProject={onOpenProject} />
+      )}
     </div>
   );
 };

@@ -1,13 +1,15 @@
 import React, { useState, useMemo } from 'react';
-import { Filter, ChevronRight, Search, RotateCcw } from 'lucide-react';
+import { Filter, ChevronRight, Search, RotateCcw, Zap } from 'lucide-react';
 import { Header } from '../common/Header';
 import { RiskBadge, StatusBadge } from '../common/Badge';
+import { useToast } from '../common/ToastSystem';
 import type { PortfolioProject, RiskLevel, ReviewStatus } from '../../types';
 
 interface RiskQueuePageProps {
   projects: PortfolioProject[];
   onOpenProject: (project: PortfolioProject) => void;
   onResetDemo: () => void;
+  onExportReport?: () => void;
   onToggleMobileNav?: () => void;
 }
 
@@ -15,13 +17,16 @@ export const RiskQueuePage: React.FC<RiskQueuePageProps> = ({
   projects,
   onOpenProject,
   onResetDemo,
+  onExportReport,
   onToggleMobileNav
 }) => {
+  const { showToast } = useToast();
   const [selectedRisk, setSelectedRisk] = useState<string>('All');
   const [selectedMinistry, setSelectedMinistry] = useState<string>('All');
   const [selectedSector, setSelectedSector] = useState<string>('All');
   const [selectedStatus, setSelectedStatus] = useState<string>('All');
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const [staleOnly, setStaleOnly] = useState<boolean>(false);
 
   const riskLevels: RiskLevel[] = ['Critical', 'High', 'Watch', 'Low'];
   const statusOptions: ReviewStatus[] = ['Needs review', 'In review', 'Monitoring', 'Resolved'];
@@ -40,17 +45,19 @@ export const RiskQueuePage: React.FC<RiskQueuePageProps> = ({
       if (selectedMinistry !== 'All' && p.ministry !== selectedMinistry) return false;
       if (selectedSector !== 'All' && p.sector !== selectedSector) return false;
       if (selectedStatus !== 'All' && p.status !== selectedStatus) return false;
+      if (staleOnly && p.alertAgeDays <= 30) return false;
       if (searchQuery.trim()) {
         const q = searchQuery.toLowerCase();
         const matchName = p.name.toLowerCase().includes(q);
         const matchMin = p.ministry.toLowerCase().includes(q);
         const matchSec = p.sector.toLowerCase().includes(q);
         const matchReg = p.region.toLowerCase().includes(q);
-        if (!matchName && !matchMin && !matchSec && !matchReg) return false;
+        const matchDriver = p.assessment.drivers.some(d => d.toLowerCase().includes(q));
+        if (!matchName && !matchMin && !matchSec && !matchReg && !matchDriver) return false;
       }
       return true;
     }).sort((a, b) => b.assessment.score - a.assessment.score);
-  }, [projects, selectedRisk, selectedMinistry, selectedSector, selectedStatus, searchQuery]);
+  }, [projects, selectedRisk, selectedMinistry, selectedSector, selectedStatus, searchQuery, staleOnly]);
 
   const clearFilters = () => {
     setSelectedRisk('All');
@@ -58,6 +65,26 @@ export const RiskQueuePage: React.FC<RiskQueuePageProps> = ({
     setSelectedSector('All');
     setSelectedStatus('All');
     setSearchQuery('');
+    setStaleOnly(false);
+  };
+
+  const applyPresetCritical = () => {
+    clearFilters();
+    setSelectedRisk('Critical');
+    setSelectedStatus('Needs review');
+    showToast('Filter applied: Critical Risk & Needs Review', 'info');
+  };
+
+  const applyPresetStale = () => {
+    clearFilters();
+    setStaleOnly(true);
+    showToast('Filter applied: Stale Alerts (>30 days old)', 'info');
+  };
+
+  const applyPresetROW = () => {
+    clearFilters();
+    setSearchQuery('clearance');
+    showToast('Filter applied: ROW & Forest Clearance Blockers', 'info');
   };
 
   return (
@@ -66,8 +93,28 @@ export const RiskQueuePage: React.FC<RiskQueuePageProps> = ({
         title="Risk queue"
         subtitle="Filter the portfolio by severity, ministry, sector, and current review status."
         onReset={onResetDemo}
+        onExportReport={onExportReport}
         onToggleMobileNav={onToggleMobileNav}
       />
+
+      {/* Preset Quick Filters */}
+      <div className="preset-bar">
+        <div className="preset-label">
+          <Zap size={14} className="icon-mint" />
+          <span>Quick Filter Presets:</span>
+        </div>
+        <div className="preset-chips">
+          <button className="preset-chip" onClick={applyPresetCritical}>
+            🚨 Critical & Unaddressed
+          </button>
+          <button className="preset-chip" onClick={applyPresetStale}>
+            ⏳ Stale Alerts (&gt;30 Days)
+          </button>
+          <button className="preset-chip" onClick={applyPresetROW}>
+            🌳 ROW & Clearance Blockers
+          </button>
+        </div>
+      </div>
 
       {/* Multi-Dimensional Filter Bar */}
       <div className="widefilters">
@@ -83,7 +130,7 @@ export const RiskQueuePage: React.FC<RiskQueuePageProps> = ({
             type="text"
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
-            placeholder="Search projects, regions..."
+            placeholder="Search projects, drivers..."
           />
         </div>
 
@@ -119,7 +166,7 @@ export const RiskQueuePage: React.FC<RiskQueuePageProps> = ({
           ))}
         </select>
 
-        {(selectedRisk !== 'All' || selectedMinistry !== 'All' || selectedSector !== 'All' || selectedStatus !== 'All' || searchQuery) && (
+        {(selectedRisk !== 'All' || selectedMinistry !== 'All' || selectedSector !== 'All' || selectedStatus !== 'All' || searchQuery || staleOnly) && (
           <button className="clear-filter-btn" onClick={clearFilters} title="Reset search and filters">
             <RotateCcw size={12} />
             <span>Reset</span>

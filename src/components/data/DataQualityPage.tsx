@@ -1,19 +1,24 @@
 import React from 'react';
-import { Database, CheckCircle2 } from 'lucide-react';
+import { Database, CheckCircle2, Download, Copy } from 'lucide-react';
 import { Header } from '../common/Header';
+import { useToast } from '../common/ToastSystem';
 import type { PortfolioProject } from '../../types';
 
 interface DataQualityPageProps {
   projects: PortfolioProject[];
   onResetDemo: () => void;
+  onExportReport?: () => void;
   onToggleMobileNav?: () => void;
 }
 
 export const DataQualityPage: React.FC<DataQualityPageProps> = ({
   projects,
   onResetDemo,
+  onExportReport,
   onToggleMobileNav
 }) => {
+  const { showToast } = useToast();
+
   const avgQuality = Math.round(
     projects.reduce((acc, p) => acc + p.quality.score, 0) / (projects.length || 1)
   );
@@ -28,12 +33,38 @@ export const DataQualityPage: React.FC<DataQualityPageProps> = ({
 
   const clearDependencyPct = Math.round((clearDependenciesCount / (projects.length || 1)) * 100);
 
+  const handleExportJson = () => {
+    try {
+      const dataStr = JSON.stringify(projects, null, 2);
+      const blob = new Blob([dataStr], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `pragati-x-portfolio-audit-log-${new Date().toISOString().slice(0, 10)}.json`;
+      link.click();
+      URL.revokeObjectURL(url);
+      showToast('✓ Full portfolio audit log exported as JSON file', 'success');
+    } catch (e) {
+      showToast('Failed to export audit log', 'warning');
+    }
+  };
+
+  const handleCopyJson = () => {
+    try {
+      navigator.clipboard.writeText(JSON.stringify(projects, null, 2));
+      showToast('✓ Portfolio JSON state copied to clipboard!', 'success');
+    } catch (e) {
+      showToast('Clipboard access unavailable', 'warning');
+    }
+  };
+
   return (
     <div className="data-quality-view">
       <Header
         title="Data quality & transparency"
         subtitle="The transparent inputs and data completeness scores behind every model prediction."
         onReset={onResetDemo}
+        onExportReport={onExportReport}
         onToggleMobileNav={onToggleMobileNav}
       />
 
@@ -76,6 +107,14 @@ export const DataQualityPage: React.FC<DataQualityPageProps> = ({
           <div>
             <p className="px-kicker">INPUT HEALTH BY PROJECT</p>
             <h2>Data Quality Index ({avgQuality}% avg)</h2>
+          </div>
+          <div className="data-actions-flex">
+            <button className="export" onClick={handleCopyJson} title="Copy JSON state to clipboard">
+              <Copy size={13} /> Copy JSON
+            </button>
+            <button className="export" onClick={handleExportJson} title="Download JSON audit file">
+              <Download size={13} /> Download Audit Log (JSON)
+            </button>
           </div>
         </div>
 
