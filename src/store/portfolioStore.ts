@@ -4,21 +4,30 @@ import type { PortfolioProject, Intervention, Outcome, InterventionType } from '
 
 const STORAGE_KEY = 'pragati-x-demo-v3';
 
-export function usePortfolioStore() {
-  const [projects, setProjects] = useState<PortfolioProject[]>(() => {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          return parsed;
-        }
+const LEARNING_SIGNALS: Record<Outcome, string> = {
+  'Mitigated': 'Learning signal recorded: Risk mitigation action verified by officer',
+  'False alert': 'Verified false alert: Model baseline recalibrated for reporting lag',
+  'Confirmed risk': 'Confirmed risk: Priority escalation active in risk queue',
+  'Needs monitoring': 'Monitoring active: Follow-up verification scheduled'
+};
+
+function loadStoredProjects(): PortfolioProject[] {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        return parsed;
       }
-    } catch (e) {
-      console.warn('Failed to parse localStorage demo state, loading seed data.', e);
     }
-    return seedProjects;
-  });
+  } catch (e) {
+    console.warn('Failed to load local demo state, falling back to seed data.', e);
+  }
+  return seedProjects;
+}
+
+export function usePortfolioStore() {
+  const [projects, setProjects] = useState<PortfolioProject[]>(loadStoredProjects);
 
   useEffect(() => {
     try {
@@ -49,30 +58,12 @@ export function usePortfolioStore() {
       prevProjects.map(proj => {
         if (proj.id !== projectId) return proj;
 
-        const newStatus = (outcome === 'Mitigated' || outcome === 'False alert')
-          ? 'Resolved'
-          : 'Monitoring';
-
-        let learningSignal = '';
-        switch (outcome) {
-          case 'Mitigated':
-            learningSignal = 'Learning signal recorded: Risk mitigation action verified by officer';
-            break;
-          case 'False alert':
-            learningSignal = 'Verified false alert: Model baseline recalibrated for reporting lag';
-            break;
-          case 'Confirmed risk':
-            learningSignal = 'Confirmed risk: Priority escalation active in risk queue';
-            break;
-          case 'Needs monitoring':
-            learningSignal = 'Monitoring active: Follow-up verification scheduled';
-            break;
-        }
+        const isResolved = outcome === 'Mitigated' || outcome === 'False alert';
 
         return {
           ...proj,
-          status: newStatus,
-          learningState: learningSignal,
+          status: isResolved ? 'Resolved' : 'Monitoring',
+          learningState: LEARNING_SIGNALS[outcome],
           interventions: [newIntervention, ...proj.interventions],
           feedback: {
             note: newIntervention.note,
@@ -87,7 +78,6 @@ export function usePortfolioStore() {
   const resetDemo = useCallback(() => {
     try {
       localStorage.removeItem(STORAGE_KEY);
-      localStorage.removeItem('pragati-x-demo-v2');
     } catch (e) {
       console.warn('Error clearing localStorage', e);
     }
@@ -106,8 +96,7 @@ export function usePortfolio() {
 
   const update = useCallback((
     id: string,
-    intervention: { type: InterventionType; outcome: Outcome; note: string },
-    _feedback?: any
+    intervention: { type: InterventionType; outcome: Outcome; note: string }
   ) => {
     recordIntervention(id, intervention.type, intervention.outcome, intervention.note);
   }, [recordIntervention]);
