@@ -310,9 +310,17 @@ export const RiskBriefDrawer: React.FC<RiskBriefDrawerProps> = ({
               </button>
 
               {submitted && (
-                <p className="success-toast">
-                  ✓ Portfolio state updated. Status set to &ldquo;{project.status}&rdquo;.
-                </p>
+                <div className="intervention-impact" role="status">
+                  <CheckCircle2 size={17} />
+                  <div>
+                    <b>Intervention impact recorded</b>
+                    <p>
+                      {outcome === 'Mitigated' || outcome === 'False alert'
+                        ? 'This project moved to Resolved and the portfolio learning signal was updated.'
+                        : 'This project moved to Monitoring and is now visible in the active review count.'}
+                    </p>
+                  </div>
+                </div>
               )}
             </form>
 

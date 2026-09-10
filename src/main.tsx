@@ -12,6 +12,7 @@ import { PortfolioAssistantPage } from './components/assistant/PortfolioAssistan
 import { ExecutiveReportModal } from './components/common/ExecutiveReportModal';
 import { ProjectComparisonModal } from './components/portfolio/ProjectComparisonModal';
 import { KeyboardShortcutsModal } from './components/common/KeyboardShortcutsModal';
+import { GuidedDemoModal } from './components/common/GuidedDemoModal';
 import type { PortfolioProject } from './types';
 import './styles.css';
 
@@ -24,6 +25,7 @@ function AppContent() {
   const [mobileNavOpen, setMobileNavOpen] = useState<boolean>(false);
   const [showReportModal, setShowReportModal] = useState<boolean>(false);
   const [showShortcutsModal, setShowShortcutsModal] = useState<boolean>(false);
+  const [showGuidedDemo, setShowGuidedDemo] = useState<boolean>(false);
   const [isDarkMode, setIsDarkMode] = useState<boolean>(false);
 
   // Synchronize selected project reference with updated projects state
@@ -127,6 +129,7 @@ function AppContent() {
             {...commonProps}
             onOpenProject={handleOpenProject}
             onCompareProjects={setComparingProjects}
+            onStartDemo={() => setShowGuidedDemo(true)}
           />
         );
       case 'risk':
@@ -161,6 +164,7 @@ function AppContent() {
             {...commonProps}
             onOpenProject={handleOpenProject}
             onCompareProjects={setComparingProjects}
+            onStartDemo={() => setShowGuidedDemo(true)}
           />
         );
     }
@@ -207,6 +211,14 @@ function AppContent() {
       {showShortcutsModal && (
         <KeyboardShortcutsModal
           onClose={() => setShowShortcutsModal(false)}
+        />
+      )}
+
+      {showGuidedDemo && (
+        <GuidedDemoModal
+          projects={projects}
+          onOpenProject={handleOpenProject}
+          onClose={() => setShowGuidedDemo(false)}
         />
       )}
     </div>
