@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { X, CheckCircle2, ShieldAlert, Info, Send, Sliders, RefreshCcw, AlertTriangle, Clock } from 'lucide-react';
 import { RiskBadge, StatusBadge, OutcomeBadge } from '../common/Badge';
 import { useToast } from '../common/ToastSystem';
@@ -21,6 +21,7 @@ export const RiskBriefDrawer: React.FC<RiskBriefDrawerProps> = ({
   onRecordIntervention
 }) => {
   const { showToast } = useToast();
+  const drawerRef = useRef<HTMLElement>(null);
   const [activeTab, setActiveTab] = useState<'brief' | 'simulator'>('brief');
 
   // Intervention form state
@@ -60,6 +61,21 @@ export const RiskBriefDrawer: React.FC<RiskBriefDrawerProps> = ({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [onClose]);
 
+  useEffect(() => {
+    const previouslyFocused = document.activeElement as HTMLElement | null;
+    const timer = window.setTimeout(() => drawerRef.current?.querySelector<HTMLElement>('button, select, textarea')?.focus(), 0);
+    const trapFocus = (event: KeyboardEvent) => {
+      if (event.key !== 'Tab' || !drawerRef.current) return;
+      const focusable = Array.from(drawerRef.current.querySelectorAll<HTMLElement>('button:not([disabled]), select:not([disabled]), textarea:not([disabled]), input:not([disabled])'));
+      if (!focusable.length) return;
+      const first = focusable[0], last = focusable[focusable.length - 1];
+      if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+      else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+    };
+    window.addEventListener('keydown', trapFocus);
+    return () => { window.clearTimeout(timer); window.removeEventListener('keydown', trapFocus); previouslyFocused?.focus(); };
+  }, []);
+
   // Calculate dynamic simulated score
   const simulatedScore = useMemo(() => {
     const base = simCostVar * 1.8 + simSchedVar * 2.2 + (simDepResolved ? 10 : 38);
@@ -98,7 +114,7 @@ export const RiskBriefDrawer: React.FC<RiskBriefDrawerProps> = ({
       aria-modal="true"
       aria-labelledby="drawer-title"
     >
-      <aside className="drawer" onClick={e => e.stopPropagation()}>
+      <aside className="drawer" ref={drawerRef} onClick={e => e.stopPropagation()}>
         <button className="close" onClick={onClose} aria-label="Close risk brief">
           <X size={18} />
         </button>
