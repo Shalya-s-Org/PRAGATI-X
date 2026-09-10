@@ -2207,6 +2207,160 @@ p {
   }
 }
 
+/* Sidebar Utilities & Hotkeys */
+.side-utilities {
+  margin-top: 14px;
+  display: grid;
+  gap: 4px;
+  padding-top: 12px;
+  border-top: 1px solid #294652;
+}
+
+.side-util-btn {
+  color: #8da4ae;
+  padding: 8px 10px;
+  border-radius: 6px;
+  font-size: 11px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.12s ease;
+}
+
+.side-util-btn:hover {
+  background: #1d404d;
+  color: white;
+}
+
+/* Shortcuts Modal */
+.shortcuts-modal {
+  width: min(520px, 92vw);
+}
+
+.shortcuts-title-flex {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.shortcuts-grid {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.shortcut-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background: #f8faf9;
+  border-radius: 7px;
+  border: 1px solid #e5ece9;
+}
+
+.shortcut-kbd {
+  font: 700 10px 'DM Mono', monospace;
+  background: white;
+  border: 1px solid #cceada;
+  color: #17654b;
+  padding: 4px 8px;
+  border-radius: 5px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+}
+
+.shortcut-desc {
+  font-size: 11px;
+  color: #3b5563;
+}
+
+.shortcuts-foot {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font: 500 10px 'DM Mono', monospace;
+  color: #63777f;
+  border-top: 1px solid #edf1f1;
+  padding-top: 14px;
+}
+
+/* Executive Navy Dark Theme */
+body.dark-theme {
+  background: #0b1a23;
+  color: #e1e9ec;
+}
+
+body.dark-theme .px-app {
+  background: #0b1a23;
+}
+
+body.dark-theme .px-main {
+  color: #e1e9ec;
+}
+
+body.dark-theme .queue,
+body.dark-theme .chart-card,
+body.dark-theme .table-wrap,
+body.dark-theme .ai-chat,
+body.dark-theme .ai-context,
+body.dark-theme .roi-calculator-card,
+body.dark-theme .widefilters,
+body.dark-theme .preset-bar,
+body.dark-theme .scenario-card,
+body.dark-theme .drawer,
+body.dark-theme .report-modal,
+body.dark-theme .region-card {
+  background: #132733;
+  border-color: #243a47;
+  color: #e1e9ec;
+}
+
+body.dark-theme .project-row {
+  border-bottom-color: #1f3542;
+}
+
+body.dark-theme .project-row:hover {
+  background: #1c3645;
+}
+
+body.dark-theme .project-row b,
+body.dark-theme .chart-head h3,
+body.dark-theme .px-header h1,
+body.dark-theme .section-title h2,
+body.dark-theme .report-modal h2,
+body.dark-theme .sim-score-new,
+body.dark-theme .roi-metric-item b {
+  color: white;
+}
+
+body.dark-theme .export,
+body.dark-theme .data-source-badge,
+body.dark-theme .clear-filter-btn,
+body.dark-theme .preset-chip {
+  background: #172d3b;
+  border-color: #2b4554;
+  color: #d2e1e7;
+}
+
+body.dark-theme select,
+body.dark-theme input {
+  background: #172d3b;
+  border-color: #2b4554;
+  color: white;
+}
+
+body.dark-theme .model-grid-item,
+body.dark-theme .roi-metric-item,
+body.dark-theme .shortcut-row,
+body.dark-theme .report-metric,
+body.dark-theme .risk-summary,
+body.dark-theme .sim-controls {
+  background: #172d3b;
+  border-color: #284252;
+  color: white;
+}
+
+
 
 
 /* Toast Notification System */

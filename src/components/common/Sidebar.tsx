@@ -1,18 +1,24 @@
 import React from 'react';
-import { CheckCircle2, X } from 'lucide-react';
+import { CheckCircle2, X, Keyboard, Moon, Sun } from 'lucide-react';
 
 interface SidebarProps {
   currentPage: string;
   onPageSelect: (pageId: string) => void;
   mobileOpen?: boolean;
   onCloseMobile?: () => void;
+  onOpenShortcuts?: () => void;
+  isDarkMode?: boolean;
+  onToggleDarkMode?: () => void;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
   currentPage,
   onPageSelect,
   mobileOpen = false,
-  onCloseMobile
+  onCloseMobile,
+  onOpenShortcuts,
+  isDarkMode = false,
+  onToggleDarkMode
 }) => {
   const navItems = [
     ['Portfolio', 'portfolio'],
@@ -66,6 +72,23 @@ export const Sidebar: React.FC<SidebarProps> = ({
             </button>
           ))}
         </nav>
+
+        {/* Sidebar Utilities: Shortcuts & Theme */}
+        <div className="side-utilities">
+          {onOpenShortcuts && (
+            <button className="side-util-btn" onClick={onOpenShortcuts} title="Open keyboard shortcuts guide (?)">
+              <Keyboard size={14} />
+              <span>Shortcuts (?)</span>
+            </button>
+          )}
+
+          {onToggleDarkMode && (
+            <button className="side-util-btn" onClick={onToggleDarkMode} title="Toggle presentation theme">
+              {isDarkMode ? <Sun size={14} /> : <Moon size={14} />}
+              <span>{isDarkMode ? 'Light Mode' : 'Executive Navy'}</span>
+            </button>
+          )}
+        </div>
 
         <div className="px-source">
           <CheckCircle2 size={16} />
