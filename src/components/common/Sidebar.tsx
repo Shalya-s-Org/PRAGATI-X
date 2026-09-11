@@ -1,5 +1,5 @@
 import React from 'react';
-import { CheckCircle2, X, Keyboard, Moon, Sun } from 'lucide-react';
+import { CheckCircle2, X, Keyboard, Moon, Sun, LayoutDashboard, AlertTriangle, ShieldCheck, Database, Bot, Landmark } from 'lucide-react';
 
 interface SidebarProps {
   currentPage: string;
@@ -21,11 +21,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onToggleDarkMode
 }) => {
   const navItems = [
-    ['Portfolio', 'portfolio'],
-    ['Risk queue', 'risk'],
-    ['Interventions', 'interventions'],
-    ['Data quality', 'data'],
-    ['AI assistant', 'assistant']
+    { name: 'Command Center', id: 'portfolio', icon: LayoutDashboard },
+    { name: 'Project Deep-Dive', id: 'risk', icon: AlertTriangle },
+    { name: 'Intervention Control', id: 'interventions', icon: ShieldCheck },
+    { name: 'Benchmarking', id: 'data', icon: Database },
+    { name: 'AI Copilot', id: 'assistant', icon: Bot }
   ];
 
   const handleSelect = (id: string) => {
@@ -45,8 +45,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
       <aside className={`px-side ${mobileOpen ? 'mobile-visible' : ''}`}>
         <div className="px-side-header">
           <div className="px-brand">
-            <span>PX</span>
-            PRAGATI-X
+            <span className="px-logo-box"><Landmark size={18} strokeWidth={2.4} /></span>
+            <div className="px-brand-text">
+              <b>IPMD Monitor</b>
+              <small>Project Intelligence Platform</small>
+            </div>
           </div>
           {onCloseMobile && (
             <button
@@ -59,16 +62,17 @@ export const Sidebar: React.FC<SidebarProps> = ({
           )}
         </div>
 
-        <p className="px-caption">GOVERNMENT PROJECT INTELLIGENCE</p>
+        <p className="px-caption">INFRASTRUCTURE &amp; PROJECT MONITORING</p>
 
         <nav className="px-nav" aria-label="Main Navigation">
-          {navItems.map(([name, id]) => (
+          {navItems.map(({ name, id, icon: Icon }) => (
             <button
               key={id}
               className={currentPage === id ? 'active' : ''}
               onClick={() => handleSelect(id)}
             >
-              {name}
+              <Icon size={16} className="nav-icon" />
+              <span>{name}</span>
             </button>
           ))}
         </nav>
@@ -85,7 +89,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           {onToggleDarkMode && (
             <button className="side-util-btn" onClick={onToggleDarkMode} title="Toggle presentation theme">
               {isDarkMode ? <Sun size={14} /> : <Moon size={14} />}
-              <span>{isDarkMode ? 'Light Mode' : 'Executive Navy'}</span>
+              <span>{isDarkMode ? 'Light mode' : 'Dark mode'}</span>
             </button>
           )}
         </div>
@@ -93,8 +97,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
         <div className="px-source">
           <CheckCircle2 size={16} />
           <span>
-            <b>CURATED DEMO DATA</b>
-            <small>PAIMANA / CUF · Apr 2026</small>
+            <b>MONITORING DATA ONLINE</b>
+            <small>Portfolio refresh · Apr 2026</small>
           </span>
         </div>
       </aside>

@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client';
 import { usePortfolioStore } from './store/portfolioStore';
 import { ToastProvider, useToast } from './components/common/ToastSystem';
 import { Sidebar } from './components/common/Sidebar';
+import { CommandTopbar } from './components/common/CommandTopbar';
 import { PortfolioCenter } from './components/portfolio/PortfolioCenter';
 import { RiskQueuePage } from './components/risk/RiskQueuePage';
 import { RiskBriefDrawer } from './components/risk/RiskBriefDrawer';
@@ -77,9 +78,9 @@ function AppContent() {
   // Dark Theme Class Binding
   useEffect(() => {
     if (isDarkMode) {
-      document.body.classList.add('dark-theme');
+      document.body.classList.add('light-mode');
     } else {
-      document.body.classList.remove('dark-theme');
+      document.body.classList.remove('light-mode');
     }
   }, [isDarkMode]);
 
@@ -111,7 +112,7 @@ function AppContent() {
 
   const handleToggleDarkMode = () => {
     setIsDarkMode(prev => !prev);
-    showToast(isDarkMode ? 'Switched to Light Mode' : 'Switched to Executive Navy Theme', 'info');
+    showToast(isDarkMode ? 'Switched to light mode' : 'Switched to IPMD dark mode', 'info');
   };
 
   const renderContent = () => {
@@ -172,6 +173,7 @@ function AppContent() {
 
   return (
     <div className="px-app">
+      <CommandTopbar projects={projects} />
       <Sidebar
         currentPage={activePage}
         onPageSelect={setActivePage}

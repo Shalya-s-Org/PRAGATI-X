@@ -29,7 +29,7 @@ export const Header: React.FC<HeaderProps> = ({
           </button>
         )}
         <div>
-          <p className="px-kicker">NATIONAL INFRASTRUCTURE PORTFOLIO</p>
+          <p className="px-kicker">IPMD · NATIONAL INFRASTRUCTURE PORTFOLIO</p>
           <h1>{title}</h1>
           <p className="header-subtitle">{subtitle}</p>
         </div>
@@ -37,31 +37,32 @@ export const Header: React.FC<HeaderProps> = ({
 
       <div className="head-actions">
         <div className="data-source-badge" title="Validated local demo dataset">
+          <span className="live-status-dot" />
           <CheckCircle2 size={14} className="icon-mint" />
           <span>
-            <b>CURATED DEMO DATA</b>
-            <small>PAIMANA / CUF · Apr 2026</small>
+            <b>PORTFOLIO DATA ONLINE</b>
+            <small>Last validated · Apr 2026</small>
           </span>
         </div>
 
         {onExportReport && (
           <button
-            className="export report-btn"
+            className="btn-header-action report-btn"
             onClick={onExportReport}
-            title="Generate executive portfolio brief report"
+            title="Generate IPMD portfolio brief"
           >
             <FileText size={14} />
-            <span>Export Report</span>
+            <span>Export brief</span>
           </button>
         )}
 
         <button
-          className="export reset-btn"
+          className="btn-header-action reset-btn"
           onClick={onReset}
-          title="Reset demo data to initial seed state"
+          title="Reset portfolio sample data"
         >
           <RefreshCcw size={14} />
-          <span>Reset demo</span>
+          <span>Reset data</span>
         </button>
       </div>
     </header>

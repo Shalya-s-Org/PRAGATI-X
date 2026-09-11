@@ -69,6 +69,12 @@ export const PortfolioAssistantPage: React.FC<PortfolioAssistantPageProps> = ({
     }
 
     setAnswer(responseText);
+    setQuery('');
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    handleAsk();
   };
 
   const handleToggleSpeak = () => {
@@ -182,7 +188,6 @@ export const PortfolioAssistantPage: React.FC<PortfolioAssistantPageProps> = ({
               <button
                 key={prompt}
                 onClick={() => {
-                  setQuery(prompt);
                   handleAsk(prompt);
                 }}
               >
@@ -192,18 +197,17 @@ export const PortfolioAssistantPage: React.FC<PortfolioAssistantPageProps> = ({
           </div>
 
           {/* Input Row */}
-          <div className="ask">
+          <form className="ask" onSubmit={handleSubmit}>
             <input
               type="text"
               value={query}
               onChange={e => setQuery(e.target.value)}
-              onKeyDown={e => e.key === 'Enter' && handleAsk()}
               placeholder="Ask about project risks, drivers, or intervention outcomes..."
             />
-            <button onClick={() => handleAsk()} aria-label="Send prompt">
+            <button type="submit" aria-label="Send prompt">
               <ArrowRight size={16} />
             </button>
-          </div>
+          </form>
         </section>
 
         {/* Authorized Context Panel */}

@@ -29,8 +29,8 @@ export const ExecutiveReportModal: React.FC<ExecutiveReportModalProps> = ({ proj
       <div className="report-modal" onClick={e => e.stopPropagation()}>
         <div className="report-modal-header">
           <div>
-            <p className="px-kicker">GOVERNMENT OF INDIA · PRAGATI-X INTELLIGENCE</p>
-            <h2>National Infrastructure Portfolio Executive Brief</h2>
+            <p className="px-kicker">IPMD · INFRASTRUCTURE &amp; PROJECT MONITORING DIVISION</p>
+            <h2>National Infrastructure Portfolio Monitoring Brief</h2>
             <small>April 2026 Snapshot · Validated Local Simulation Data</small>
           </div>
           <div className="report-actions">
@@ -121,7 +121,7 @@ export const ExecutiveReportModal: React.FC<ExecutiveReportModalProps> = ({ proj
 
           <div className="report-footer">
             <ShieldCheck size={16} className="icon-mint" />
-            <span>PRAGATI-X DEMO ENGINE · OFFICIAL EXECUTIVE REPORT SUMMARY</span>
+            <span>IPMD MONITORING PLATFORM · PORTFOLIO SUMMARY</span>
           </div>
         </div>
       </div>
